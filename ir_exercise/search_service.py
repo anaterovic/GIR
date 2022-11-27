@@ -29,8 +29,15 @@ def create_query(query_str: str):
     #  - https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-boosting-query.html
     query = {
         "bool": {
-            "must": [{"match": {"title": query_str}}],
-            "should": [],
+            "should": [
+                {"match": {"text": query_str}}, 
+                {"regexp":{"title":{
+                    "value":".*"+query_str+".*",
+                    "case_insensitive": True,
+                    "boost":20,
+                    "max_determinized_states": 100}}    
+                }
+            ],
         }
     }
     return query

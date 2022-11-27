@@ -17,20 +17,52 @@ class Indexer:
         self.es_client.ping()
 
     def _create_mappings(self):
+
+        mapping = {
+            "mappings": {
+                "properties": {
+                    "text": {
+                        "type": "text", 
+                        "analyzer": "standard"
+                    },
+                    "summary": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    },
+                    "title": {
+                        "type": "text",
+                        "analyzer": "custom_lowercase"
+                    }
+                }
+            }
+        }
         # Todo:
         #  Improve mapping by defining separate analyzers for separate fields
         #  More details:
         #  - https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
-        return {}
+        return mapping.get("mappings")
 
     def _create_settings(self):
+
+        settings = {
+        "analysis": {
+            "analyzer": {
+                "custom_lowercase": {
+                "tokenizer": "keyword",
+                "filter": [
+                    "lowercase"
+                ]
+                }
+            }
+            }
+        }
         # Todo:
         #  Define your own tokenizers, filters and analyzers here
         #  More details:
         #   - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenizers.html
         #   - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenfilters.html
         #   - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html
-        return {}
+        return settings
 
     def create_index(self, index_name: str, recreate: bool = False) -> None:
         if self.es_client.indices.exists(index=index_name):
@@ -75,6 +107,9 @@ def generate_data(index_name: str, data_path: str):
             "title": doc["title"],
             "_index": index_name,
             "_id": doc["title"],
+            "cast": doc["cast"],
+            "text": doc["text"],
+            "summary": doc["summary"],
         }
 
 
