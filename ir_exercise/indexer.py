@@ -23,7 +23,7 @@ class Indexer:
         mapping = {
             "mappings": {
                 "properties": {
-                    "text": {
+                    "plot": {
                         "type": "text", 
                         "analyzer": "standard"
                     },
@@ -34,7 +34,23 @@ class Indexer:
                     "title": {
                         "type": "text",
                         "analyzer": "custom_lowercase"
-                    }
+                    },
+                    "filming": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    },
+                    "awards": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    },
+                    "production": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    },
+                    "cast": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    },
                 }
             }
         }
@@ -106,16 +122,25 @@ def generate_data(index_name: str, data_path: str):
         #   - fields that already exist in the data
         #   - complete new fields that you come up with, e.g. a separate field with partial data
         # print(type(doc["text"]))
-        tmp_text = doc["text"].split(2*os.linesep)
+
+        groups = ["Plot", "Filming", "Critical response", "Production", "Cast", "Casting", "Filming", "Post-production", "Music", "Release", "Marketing", 
+        "Box office", "Accolades", "Historical accuracy","Notes", "Premise", "References", "Cinematography"]
+
+        tmp_text = doc["text"].split("\n\n")
+        plot = ""
+        filming = ""
+        awards = ""
+        production = ""
+
         for text in tmp_text:
-            if "Plot" in text:
-                plot = text
-            else:
-                plot = ""
-            if "Filming" in text:
-                filming = text
-            else:
-                filming = ""
+            if "plot" in text.lower():
+                plot += text
+            if "filming" in text.lower():
+                filming += text
+            if "critical" in text.lower() or "award" in text.lower():
+                awards += text
+            if "production" in text.lower():
+                production += text
 
 
         tmp_title = re.sub("[\(\[].*?[\)\]]", "", doc["title"])
@@ -129,8 +154,9 @@ def generate_data(index_name: str, data_path: str):
             "text": doc["text"],
             "summary": doc["summary"],
             "plot": plot,
-            "filming": filming
-
+            "filming": filming,
+            "awards": awards, 
+            "production": production
         }
 
 
