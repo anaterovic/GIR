@@ -30,7 +30,8 @@ def create_query(query_str: str):
     query = {
         "bool": {
             "should": [
-                {"match": {"text": query_str}}, 
+                {"match": {"plot": query_str}},
+                {"match": {"filming": query_str}}, 
                 {"regexp":{"title":{
                     "value":".*"+query_str+".*",
                     "case_insensitive": True,

@@ -1,4 +1,6 @@
 import json
+import re 
+import os
 from argparse import ArgumentParser
 from typing import Callable, Generator
 
@@ -103,6 +105,22 @@ def generate_data(index_name: str, data_path: str):
         #  Include more fields if necessary, e.g.:
         #   - fields that already exist in the data
         #   - complete new fields that you come up with, e.g. a separate field with partial data
+        # print(type(doc["text"]))
+        tmp_text = doc["text"].split(2*os.linesep)
+        for text in tmp_text:
+            if "Plot" in text:
+                plot = text
+            else:
+                plot = ""
+            if "Filming" in text:
+                filming = text
+            else:
+                filming = ""
+
+
+        tmp_title = re.sub("[\(\[].*?[\)\]]", "", doc["title"])
+        doc["text"] = doc["text"].replace(tmp_title, "")
+
         yield {
             "title": doc["title"],
             "_index": index_name,
@@ -110,6 +128,9 @@ def generate_data(index_name: str, data_path: str):
             "cast": doc["cast"],
             "text": doc["text"],
             "summary": doc["summary"],
+            "plot": plot,
+            "filming": filming
+
         }
 
 
