@@ -30,9 +30,9 @@ def create_query(query_str: str):
     query = {
         "bool": {
             "should": [
-                {"match": {"cast": {"query":query_str, "boost":2}}},
-                {"match": {"summary": {"query":query_str, "boost":2}}},
-                {"match": {"plot": query_str}},
+                {"match": {"cast": {"query":query_str, "boost":5}}},
+                {"match": {"summary": {"query":query_str, "boost":10}}},
+                {"match": {"plot": {"query":query_str, "boost":5}}},
                 {"match": {"filming": query_str}},
                 {"match": {"awards": query_str}},  
                 {"match": {"production": query_str}},
@@ -40,7 +40,7 @@ def create_query(query_str: str):
                 {"regexp":{"title":{
                     "value":".*"+query_str+".*",
                     "case_insensitive": True,
-                    "boost":50}}    
+                    "boost":100}}    
                 }
             ],
         }

@@ -49,8 +49,12 @@ class Indexer:
                     },
                     "cast": {
                         "type": "text",
-                        "analyzer": "standard"
+                        "analyzer": "custom_basic"
                     },
+                    "text": {
+                        "type": "text",
+                        "analyzer": "custom_basic"
+                    }
                 }
             }
         }
@@ -75,10 +79,10 @@ class Indexer:
                 },
                 "custom_basic": {
                 "type": "custom",
-                "tokenizer": "standard",
+                "tokenizer": "pattern",
                 # "char_filter": [],
                 "filter": [
-                    "lowercase", "trim", "porter_stem"
+                    "lowercase", "trim", "porter_stem", "apostrophe", "shingle",
                 ]
                 }
             }, 
@@ -150,6 +154,9 @@ def generate_data(index_name: str, data_path: str):
         groups = ["Plot", "Filming", "Critical response", "Production", "Cast", "Casting", "Filming", "Post-production", "Music", "Release", "Marketing", 
         "Box office", "Accolades", "Historical accuracy","Notes", "Premise", "References", "Cinematography"]
 
+        tmp_title = re.sub("[\(\[].*?[\)\]]", "", doc["title"])
+        doc["text"] = doc["text"].replace(tmp_title, "")
+
         tmp_text = doc["text"].split("\n\n")
         plot = ""
         filming = ""
@@ -157,18 +164,16 @@ def generate_data(index_name: str, data_path: str):
         production = ""
 
         for text in tmp_text:
-            if "plot" in text.lower():
+            if "plot" in text.lower() or "overview" in text.lower():
                 plot += text
-            if "filming" in text.lower():
+            if "Filming" in text:
                 filming += text
-            if "critical" in text.lower() or "award" in text.lower():
+            if "Critical" in text:
                 awards += text
-            if "production" in text.lower():
+            if "Production" in text:
                 production += text
-
-
-        tmp_title = re.sub("[\(\[].*?[\)\]]", "", doc["title"])
-        doc["text"] = doc["text"].replace(tmp_title, "")
+            if "Cast" in text and doc["cast"] == "":
+                doc["cast"] = text
 
         yield {
             "title": doc["title"],
