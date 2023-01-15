@@ -19,6 +19,7 @@ SEARCH_INDEX = INDEX_NAME
 
 
 def create_query(query_str: str):
+
     # Todo:
     #  Make your query better by discovering search features, e.g.:
     #  - differences between 'should' and 'must'
@@ -27,6 +28,7 @@ def create_query(query_str: str):
     #  More details
     #  - https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html
     #  - https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-boosting-query.html
+    
     query = {
         "bool": {
             "should": [

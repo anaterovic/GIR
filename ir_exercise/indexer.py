@@ -20,6 +20,11 @@ class Indexer:
 
     def _create_mappings(self):
 
+        # Todo:
+        #  Improve mapping by defining separate analyzers for separate fields
+        #  More details:
+        #  - https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
+
         mapping = {
             "mappings": {
                 "properties": {
@@ -50,21 +55,20 @@ class Indexer:
                     "cast": {
                         "type": "text",
                         "analyzer": "custom_basic"
-                    },
-                    "text": {
-                        "type": "text",
-                        "analyzer": "custom_basic"
                     }
                 }
             }
         }
-        # Todo:
-        #  Improve mapping by defining separate analyzers for separate fields
-        #  More details:
-        #  - https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
         return mapping.get("mappings")
 
     def _create_settings(self):
+
+        # Todo:
+        #  Define your own tokenizers, filters and analyzers here
+        #  More details:
+        #   - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenizers.html
+        #   - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenfilters.html
+        #   - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html
 
         settings = {
         "analysis": {
@@ -80,7 +84,6 @@ class Indexer:
                 "custom_basic": {
                 "type": "custom",
                 "tokenizer": "pattern",
-                # "char_filter": [],
                 "filter": [
                     "lowercase", "trim", "porter_stem", "apostrophe", "shingle",
                 ]
@@ -102,12 +105,6 @@ class Indexer:
             }
             }
         }
-        # Todo:
-        #  Define your own tokenizers, filters and analyzers here
-        #  More details:
-        #   - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenizers.html
-        #   - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenfilters.html
-        #   - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html
         return settings
 
     def create_index(self, index_name: str, recreate: bool = False) -> None:
@@ -145,14 +142,12 @@ def generate_data(index_name: str, data_path: str):
         doc = json.loads(line)
         if i > 0 and i % 1000 == 0:
             logger.info(f"Generated {i} number of documents.")
+            
         # Todo:
         #  Include more fields if necessary, e.g.:
         #   - fields that already exist in the data
         #   - complete new fields that you come up with, e.g. a separate field with partial data
         # print(type(doc["text"]))
-
-        groups = ["Plot", "Filming", "Critical response", "Production", "Cast", "Casting", "Filming", "Post-production", "Music", "Release", "Marketing", 
-        "Box office", "Accolades", "Historical accuracy","Notes", "Premise", "References", "Cinematography"]
 
         tmp_title = re.sub("[\(\[].*?[\)\]]", "", doc["title"])
         doc["text"] = doc["text"].replace(tmp_title, "")
@@ -180,7 +175,6 @@ def generate_data(index_name: str, data_path: str):
             "_index": index_name,
             "_id": doc["title"],
             "cast": doc["cast"],
-            "text": doc["text"],
             "summary": doc["summary"],
             "plot": plot,
             "filming": filming,
