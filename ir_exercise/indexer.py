@@ -25,11 +25,11 @@ class Indexer:
                 "properties": {
                     "plot": {
                         "type": "text", 
-                        "analyzer": "standard"
+                        "analyzer": "custom_basic"
                     },
                     "summary": {
                         "type": "text",
-                        "analyzer": "standard"
+                        "analyzer": "custom_basic"
                     },
                     "title": {
                         "type": "text",
@@ -37,15 +37,15 @@ class Indexer:
                     },
                     "filming": {
                         "type": "text",
-                        "analyzer": "standard"
+                        "analyzer": "custom_basic"
                     },
                     "awards": {
                         "type": "text",
-                        "analyzer": "standard"
+                        "analyzer": "custom_basic"
                     },
                     "production": {
                         "type": "text",
-                        "analyzer": "standard"
+                        "analyzer": "custom_basic"
                     },
                     "cast": {
                         "type": "text",
@@ -66,10 +66,34 @@ class Indexer:
         "analysis": {
             "analyzer": {
                 "custom_lowercase": {
+                "type": "custom",
                 "tokenizer": "keyword",
+                "char_filter": ["international_characters", "brackets"],
                 "filter": [
-                    "lowercase"
+                    "lowercase", "trim"
                 ]
+                },
+                "custom_basic": {
+                "type": "custom",
+                "tokenizer": "standard",
+                # "char_filter": [],
+                "filter": [
+                    "lowercase", "trim", "porter_stem"
+                ]
+                }
+            }, 
+            "char_filter": {
+                "international_characters":{
+                    "type": "mapping",
+                    "mappings": [
+                        "á => a",
+                        "é => e"
+                    ]
+                },
+                "brackets":{
+                    "type": "pattern_replace",
+                    "pattern": "(\().*(\))",
+                    "replacement": ""
                 }
             }
             }

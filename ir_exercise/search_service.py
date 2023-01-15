@@ -36,11 +36,11 @@ def create_query(query_str: str):
                 {"match": {"filming": query_str}},
                 {"match": {"awards": query_str}},  
                 {"match": {"production": query_str}},
+                {"match": {"title": {"query":query_str, "boost":100}}},
                 {"regexp":{"title":{
                     "value":".*"+query_str+".*",
                     "case_insensitive": True,
-                    "boost":50,
-                    "max_determinized_states": 100}}    
+                    "boost":50}}    
                 }
             ],
         }
